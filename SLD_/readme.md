@@ -1,5 +1,3 @@
-Sure, here's the updated markdown file with the image included.
-
 ---
 
 # Straight Line Diagram Toolbox
