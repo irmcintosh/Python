@@ -1,11 +1,11 @@
-```markdown
+
 # Polyline Measure Interpolation
 
 This repository contains a Python script that uses `arcpy` and `numpy` to update the geometry of polyline features with interpolated measure values. The script calculates cumulative distances between polyline vertices and linearly interpolates measure values for each vertex.
 
 ## Prerequisites
 
-- [ArcGIS Pro] (https://www.esri.com/en-us/arcgis/products/arcgis-pro/overview) with the `arcpy` package.
+- [ArcGIS Pro](https://www.esri.com/en-us/arcgis/products/arcgis-pro/overview) with the `arcpy` package.
 - Python 3.x.
 - `numpy` library.
 
@@ -109,6 +109,5 @@ Feel free to submit issues, fork the repository and send pull requests. For majo
 ## Contact
 
 For any questions or comments, please open an issue on this repository.
-```
 
 This README file provides an overview of the script, its functions, and how to use it. Adjust the paths, fields, and additional details as needed to fit your specific project.
