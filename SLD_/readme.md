@@ -1,4 +1,4 @@
-Here's a detailed markdown file documenting the provided Python script for creating a Straight Line Diagram (SLD) using ArcPy.
+Sure, here's the updated markdown file with the image included.
 
 ---
 
@@ -17,6 +17,7 @@ This document provides an overview of the `StraightLineDiagram` toolbox, which i
   - [GenerateHorizontalRoute](#generatehorizontalroute)
   - [GenerateHorizontalRouteEvent](#generatehorizontalrouteevent)
 - [Code Details](#code-details)
+- [Output Example](#output-example)
 
 ## Overview
 
@@ -141,6 +142,12 @@ Post-processing after the tool execution.
 ## Code Details
 
 The provided code includes detailed implementations for generating horizontal routes and events. Key functions are defined to support data processing, including copying domains, handling spatial references, and creating route events.
+
+## Output Example
+
+The following image shows an example output of the Straight Line Diagram:
+
+![Straight Line Diagram Output](https://github.com/irmcintosh/Python/blob/main/SLD_/sld.jpg)
 
 Feel free to explore and modify the toolbox as per your requirements.
 
