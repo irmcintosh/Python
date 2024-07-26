@@ -5,7 +5,7 @@ This repository contains a Python script that uses `arcpy` and `numpy` to update
 
 ## Prerequisites
 
-- [ArcGIS Pro](https://www.esri.com/en-us/arcgis/products/arcgis-pro/overview) with the `arcpy` package.
+- [ArcGIS Pro] (https://www.esri.com/en-us/arcgis/products/arcgis-pro/overview) with the `arcpy` package.
 - Python 3.x.
 - `numpy` library.
 
