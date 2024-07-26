@@ -1,4 +1,4 @@
-```markdown
+
 # Chunk Generator
 
 A simple Python function to split a list into smaller chunks of specified size.
@@ -59,6 +59,6 @@ for chunk in chunks:
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-```
+
 
 This `README.md` file provides an overview of the function, describes its parameters and return value, and includes an example usage with expected output.
