@@ -52,6 +52,8 @@ Imagine the output raster being displayed in a GIS environment with a color ramp
 - **Yellow Areas**: Indicate moderate path loss values, meaning weaker signal strength but still acceptable coverage.
 - **Red Areas**: Indicate high path loss values, meaning poor signal strength or potential dead zones.
 
+![Straight Line Diagram Output](https://github.com/irmcintosh/Python/blob/main/EOAnalysis/eo.png)
+
 ### Practical Applications
 
 - **Cellular Network Expansion**: Use the map to identify areas needing additional towers or signal boosters.
