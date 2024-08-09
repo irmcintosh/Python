@@ -32,7 +32,7 @@
 conda create --name mbtile python=3.8
 
 # Step 2: Activate the mbtile environment
-conda activate ['path/to/conda/env']mbtile
+conda activate 'path/to/conda/env/mbtile'
 
 # Step 3: Install GDAL in the mbtile environment
 conda install -c conda-forge gdal
