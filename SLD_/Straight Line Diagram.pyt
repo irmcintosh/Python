@@ -263,6 +263,7 @@ class GenerateHorizontalRoute:
                                             'DISABLED',
                                             sr['sr'],
                                             out_alias='SLD Route Temp')
+    
         arcpy.ResetEnvironments()
         deleteList.append(routeLayerCopy)
 
@@ -297,22 +298,20 @@ class GenerateHorizontalRoute:
                 arcpy.AddMessage(f"Starting Horizontal Process for Route {rid}")
                 
                 polyline = row[0]
-                firstPoint = 0 if not bool(input_bool_measS) else float(str(polyline.firstPoint).split(' ')[-1])
+                firstPoint = 0 if not bool(input_bool_measS) else polyline.firstPoint.M
                 firstMeas = row[fields.index(input_froMeas)] if not bool(input_bool_measS) else firstPoint
-                first_point = arcpy.Point(0,
-                                          0,
-                                          0,
-                                          firstMeas)
+                # Explicitly setting M value in the Point
+                first_point = arcpy.Point(0, 0, 0, M=firstMeas if firstMeas >= 0 else 0)
                 
-                lastPoint = polyline.length if not bool(input_bool_measS) else float(str(polyline.lastPoint).split(' ')[-1])
+                lastPoint = polyline.length if not bool(input_bool_measS) else polyline.lastPoint.M
                 lastMeas = row[fields.index(input_toMeas)] if not bool(input_bool_measS) else lastPoint
-                last_point = arcpy.Point(polyline.length, 
-                                         0,
-                                         0,
-                                         lastMeas)
+                # Explicitly setting M value in the Point
+                last_point = arcpy.Point(polyline.length, 0, 0, M=lastMeas)
                 
+                arcpy.AddMessage(f"From Measure: {firstMeas}\nTo Measure: {lastMeas}")
                 array = arcpy.Array([first_point, last_point])
-                horizontal_line = arcpy.Polyline(array)
+                # Specify spatial reference, and allow Z and M values in the Polyline creation
+                horizontal_line = arcpy.Polyline(array, has_z=False, has_m=True)
                 with arcpy.da.InsertCursor(routeLayerCopy, fields) as iCursor:
                     iField = [r for r in row[1:]]
                     iField.insert(0, horizontal_line)
@@ -320,6 +319,7 @@ class GenerateHorizontalRoute:
                 arcpy.SetProgressorPosition()
         arcpy.ResetProgressor()
         arcpy.AddMessage("="*100)
+
         #========== Process Routes to Horizontal Routes ======================
 
         #========== Store Horizontal Routes ======================
@@ -339,6 +339,8 @@ class GenerateHorizontalRoute:
                                         f"{dirName}/{outputName_}.gdb/{fcName}")
         arcpy.ResetProgressor()
         arcpy.AddMessage(f'GDB Stored at {os.path.join(dirName, outputName_)}.gdb')
+
+        
         #========== Store Horizontal Routes ======================
 
         # Delete copies
