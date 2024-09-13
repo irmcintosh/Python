@@ -44,6 +44,10 @@ The output of the provided script is a raster file that represents the path loss
 - **Emergency Services**: Emergency services can use the coverage map to understand where communication may be compromised and plan accordingly.
 - **Urban Planning**: Urban planners can use the data to ensure that critical areas, such as hospitals and schools, have adequate signal coverage.
 
+### Example Model
+
+![EO Model](https://github.com/irmcintosh/Python/blob/main/EOAnalysis/EO.svg)
+
 ### Example Visualization
 
 Imagine the output raster being displayed in a GIS environment with a color ramp applied:
@@ -52,7 +56,7 @@ Imagine the output raster being displayed in a GIS environment with a color ramp
 - **Yellow Areas**: Indicate moderate path loss values, meaning weaker signal strength but still acceptable coverage.
 - **Red Areas**: Indicate high path loss values, meaning poor signal strength or potential dead zones.
 
-![Straight Line Diagram Output](https://github.com/irmcintosh/Python/blob/main/EOAnalysis/eo.png)
+![EO Output Example](https://github.com/irmcintosh/Python/blob/main/EOAnalysis/eo.png)
 
 ### Practical Applications
 
