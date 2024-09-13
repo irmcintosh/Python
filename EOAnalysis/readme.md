@@ -46,7 +46,7 @@ The output of the provided script is a raster file that represents the path loss
 
 ### Example Model
 
-![EO Model](https://github.com/irmcintosh/Python/blob/main/EOAnalysis/EO.svg)
+![EO Model](https://github.com/irmcintosh/Python/blob/main/EOAnalysis/EO.jpg)
 
 ### Example Visualization
 
