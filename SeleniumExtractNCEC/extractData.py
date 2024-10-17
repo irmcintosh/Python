@@ -1,3 +1,14 @@
+!apt-get update
+!apt-get install -y wget unzip
+!wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+!dpkg -i google-chrome-stable_current_amd64.deb || apt-get -f install -y
+!pip install selenium
+!pip install webdriver-manager
+!apt-get install -y xvfb
+!pip install pyvirtualdisplay
+!pip install beautifulsoup4
+!pip install pandas
+
 # Import necessary modules
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
