@@ -213,39 +213,30 @@ def process(input_list, threshold=(10, 15)):
     points_to_keep = [point for point in input_list if point not in points_to_remove]
     return points_to_keep
 What It Does:
+- Clustering: Processes a list of points and removes those that are very close to one another (redundant detections).
+- Thresholding: Uses a threshold tuple to decide when two points are considered duplicates.
+- Return: A filtered list of unique points.
 
-Clustering: Processes a list of points and removes those that are very close to one another (redundant detections).
+# Data and Output
+- Annotated Images:
+  Images with detected traffic lights are saved in a designated folder (e.g., traffic_light_marked_yolov9e).
+- JSON Detection File:
+  Detection details (bounding box coordinates, labels, etc.) are stored in a JSON file.
+- Spatial Feature Class:
+  A spatial DataFrame is created from the detected points and exported as a feature class to a file geodatabase (e.g., DeepLearning.gdb) for use with ArcGIS Online.
 
-Thresholding: Uses a threshold tuple to decide when two points are considered duplicates.
-
-Return: A filtered list of unique points.
-
-Data and Output
-Annotated Images:
-Images with detected traffic lights are saved in a designated folder (e.g., traffic_light_marked_yolov9e).
-
-JSON Detection File:
-Detection details (bounding box coordinates, labels, etc.) are stored in a JSON file.
-
-Spatial Feature Class:
-A spatial DataFrame is created from the detected points and exported as a feature class to a file geodatabase (e.g., DeepLearning.gdb) for use with ArcGIS Online.
-
-Contributing
+# Contributing
 Contributions are welcome! To contribute:
 
-Fork the repository.
+1. Fork the repository.
+2. Create a new branch for your feature or bug fix.
+3. Submit a pull request detailing your changes.
 
-Create a new branch for your feature or bug fix.
-
-Submit a pull request detailing your changes.
-
-License
+# License
 This project is licensed under the MIT License.
 
-Acknowledgments
-Ultralytics YOLO: For providing a robust object detection model.
-
-ArcGIS API for Python: For enabling spatial data processing and export.
-
-OpenCV, NumPy, and Pandas: For efficient image and data manipulation.
+# Acknowledgments
+- Ultralytics YOLO: For providing a robust object detection model.
+- ArcGIS API for Python: For enabling spatial data processing and export.
+- OpenCV, NumPy, and Pandas: For efficient image and data manipulation.
 
