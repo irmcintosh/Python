@@ -1,139 +1,251 @@
-# Traffic Light Detection and Geolocation
+# Traffic Light Detection from Oriented Imagery
 
-This repository contains a Python script for detecting traffic lights in street-view images and geolocating them using camera metadata. It utilizes YOLOv9 for object detection and ArcGIS functionalities for spatial analysis.
+This repository contains a complete pipeline for detecting traffic lights in oriented imagery. It leverages a YOLO-based deep learning model for object detection, and integrates with ArcGIS for spatial analysis and export. The code is organized into several sections, including data preparation, detection, spatial processing, and exporting results.
+
+---
 
 ## Table of Contents
 
-- [Description](#description)
+- [Overview](#overview)
+- [Features](#features)
+- [Dependencies](#dependencies)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Dependencies](#dependencies)
-- [Data Requirements](#data-requirements)
-- [Output](#output)
 - [Function Explanations](#function-explanations)
+  - [traffic_light_finder](#traffic_light_finder)
+  - [find_intersection](#find_intersection)
+  - [ccw](#ccw)
+  - [intersect](#intersect)
+  - [dotdict](#dotdict)
+  - [process](#process)
+- [Data and Output](#data-and-output)
+- [Contributing](#contributing)
 - [License](#license)
+- [Acknowledgments](#acknowledgments)
 
-## Description
+---
 
-The script performs the following tasks:
+## Overview
 
-1.  **Object Detection:** Uses a pretrained YOLOv9 model to detect traffic lights in a set of street-view images.
-2.  **Image Processing:** Draws bounding boxes around detected traffic lights and saves the modified images.
-3.  **Geolocation:** Calculates the geographic coordinates of the detected traffic lights by intersecting lines of sight from consecutive images, using camera metadata from a CSV file.
-4.  **Spatial Data Creation:** Creates a spatial DataFrame with the geolocated traffic light points and exports it as a feature class to an ArcGIS geodatabase.
+The pipeline in this project:
+- **Prepares Data:** Downloads or references oriented imagery and associated metadata.
+- **Detects Traffic Lights:** Uses a pretrained YOLO model (e.g., `yolov9e.pt`) for object detection. Images are processed to annotate traffic lights with bounding boxes.
+- **Processes Spatial Data:** Calculates intersection points between detections in consecutive images and clusters redundant points.
+- **Exports Results:** Saves annotated images, writes detection details to a JSON file, and exports a spatial feature class for use in ArcGIS.
 
-## Installation
+---
 
-1.  **Clone the repository:**
+## Features
 
-    ```bash
-    git clone <repository_url>
-    cd <repository_directory>
-    ```
+- **Object Detection:** YOLO model is used to identify traffic lights.
+- **Image Annotation:** Draws bounding boxes and labels traffic lights on images.
+- **Spatial Analysis:** Computes intersections from sequential image data to pinpoint traffic light positions.
+- **Clustering:** Filters and clusters nearby detections to remove redundancy.
+- **GIS Integration:** Creates a spatial DataFrame and exports results as a feature class in a file geodatabase.
 
-2.  **Install the required dependencies:**
-
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-## Usage
-
-1.  **Ensure you have the necessary data:**
-    * Street view images in a directory.
-    * A CSV file containing camera metadata.
-    * A YOLOv9 pretrained model (`yolov9e.pt`).
-    * An ArcGIS Geodatabase.
-
-2.  **Modify the script:**
-    * Update the `sampleDir` variable to the path of your image directory.
-    * Update the `image_meta_data` variable to the path of your camera metadata CSV file.
-    * Update the `yolo` variable to the path of your YOLO model.
-    * Update the `gdb` variable to the path of your output Geodatabase.
-
-3.  **Run the script:**
-
-    ```bash
-    python <script_name>.py
-    ```
+---
 
 ## Dependencies
 
-* `os`
-* `json`
-* `cv2` (OpenCV)
-* `math`
-* `numpy`
-* `itertools`
-* `pandas`
-* `zipfile`
-* `pathlib`
-* `arcgis` (arcgis.geometry, arcgis.gis)
-* `ultralytics` (YOLO)
+Ensure you have the following installed:
 
-You can install these dependencies using the `requirements.txt` file provided:
+- **Python 3.x**
+- **OpenCV:** `opencv-python`
+- **NumPy**
+- **Pandas**
+- **ArcGIS API for Python:** `arcgis`
+- **Ultralytics YOLO:** `ultralytics`
 
-```bash
-pip install -r requirements.txt
-Example requirements.txt file:
+Standard libraries used include `os`, `json`, `math`, `itertools`, `zipfile`, and `pathlib`.
 
-Plaintext
+---
 
-opencv-python
-numpy
-pandas
-arcgis
-ultralytics
-Data Requirements
-Street-view Images: A directory containing street-view images in .tif format.
-Camera Metadata CSV: A CSV file containing camera metadata with the following columns:
-Name: Image file name (without extension).
-SHAPE: Geometry of the camera location (as a JSON string).
-CamHeading: Camera heading angle.
-HFOV: Horizontal field of view.
-VFOV: Vertical field of view.
-FarDist: Far distance for line of sight calculation.
-OBJECTID: Object ID of the camera location.
-YOLOv9 Model: A pretrained YOLOv9 model (yolov9e.pt).
-ArcGIS Geodatabase: An existing ArcGIS geodatabase for output.
-Output
-The script generates the following outputs:
+## Installation
 
-Marked Images: Images with bounding boxes around detected traffic lights, saved in a new directory (traffic_light_marked_<yolo_model_name>).
-JSON File: A JSON file (traffic_light_data_sample.json) containing the coordinates of detected traffic lights in each image.
-Feature Class: A feature class (exported_traffic_points_<yolo_model_name>) in the specified ArcGIS geodatabase, containing the geolocated traffic light points.
+1. **Clone the Repository:**
+
+   ```bash
+   git clone https://github.com/yourusername/traffic-light-detection.git
+   cd traffic-light-detection
+Install the Required Dependencies:
+
+bash
+Copy
+pip install opencv-python numpy pandas arcgis ultralytics
+Set Up Data:
+
+Update file paths (e.g., sampleDir, filepath, and image_meta_data) in the script to match your local data locations.
+
+If using ArcGIS Online sample data, adjust the download settings accordingly.
+
+Usage
+Configure Paths:
+
+Modify the file paths in the script to point to your local directories where the imagery and metadata are stored.
+
+Run the Script:
+
+bash
+Copy
+python your_script.py
+The script will:
+
+Load the YOLO model and perform detection on each image.
+
+Annotate and save images with detected traffic lights.
+
+Write detection results to a JSON file.
+
+Process spatial data from camera metadata and detected bounding boxes.
+
+Export a spatial DataFrame as a feature class to a file geodatabase.
+
 Function Explanations
-traffic_light_finder(oriented_image_path):
+traffic_light_finder
+python
+Copy
+def traffic_light_finder(oriented_image_path):
+    flag = 0
+    coordlist = []
+    temp_list = {}
+    results = model(oriented_image_path, conf=0.65)  # Perform inference
 
-This function takes the path to an image as input.
-It uses the YOLOv9 model to detect objects in the image.
-It filters the detected objects for "traffic light" labels.
-For each detected traffic light, it extracts the bounding box coordinates and confidence score.
-It draws bounding boxes and labels on the image.
-It returns a dictionary containing the detection information (coordinates, object label) and the modified image.
-If no traffic lights are found, it returns a dictionary indicating such and the original image.
-find_intersection(x1, y1, x2, y2, x3, y3, x4, y4):
+    test_img = cv2.imread(oriented_image_path)
 
-This function takes the coordinates of two line segments as input.
-It calculates the intersection point of the two lines.
-It returns the coordinates of the intersection point as a list [px, py].
-ccw(A, B, C):
+    if not results[0].boxes:  # Check if any object was detected.
+        temp_list["object"] = False
+    else:
+        for result in results:
+            boxes = result.boxes
+            for box in boxes:
+                label_index = int(box.cls[0])
+                label = model.names[label_index]
+                print(label)
+                if label.lower() == "traffic light":
+                    flag = 1
+                    b = box.xyxy[0].cpu().numpy().astype(int)  # Get box coordinates in (left, top, right, bottom) format
+                    confidence = float(box.conf[0])
+                    coordlist.append(b.tolist())
+                    test_img = cv2.rectangle(test_img, (b[0], b[1]), (b[2], b[3]), (0, 0, 255), 10)
+                    textvalue = label + "_" + str(confidence)
+                    cv2.putText(test_img, textvalue, (b[0], b[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 0, 255), 2)
+        if flag == 1:
+            temp_list["object"] = True
+            temp_list["coords"] = coordlist
+            temp_list["assetname"] = "traffic light"
+            
+    return temp_list, test_img
+What It Does:
 
-This function determines the orientation of three points (counter-clockwise, clockwise, or collinear).
-It is used to determine if two line segments intersect.
-It returns a boolean.
-intersect(A, B, C, D):
+Inference: Runs the YOLO model on an input image.
 
-This function determines if two line segments intersect.
-It utilizes the ccw function.
-It returns a boolean.
-dotdict(dict):
+Detection Check: Determines if any objects (specifically traffic lights) are detected.
 
-This class extends the Python dictionary to allow access to dictionary elements using dot notation (e.g., dict.key instead of dict['key']).
-It improves code readability.
-process(input_list, threshold=(10, 15)):
+Annotation: Draws bounding boxes and labels on detected traffic lights.
 
-This function takes a list of points as input.
-It removes redundant points that are too close to each other, based on a specified threshold.
-It returns a list of unique points.
-This function is used to help cluster and remove duplicate points that are very close to one another.
+Output: Returns a dictionary with detection details and the annotated image.
+
+find_intersection
+python
+Copy
+def find_intersection(x1, y1, x2, y2, x3, y3, x4, y4):
+    px = ((x1 * y2 - y1 * x2) * (x3 - x4) - (x1 - x2) * (x3 * y4 - y3 * x4)) / (
+        (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
+    )
+    py = ((x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2) * (x3 * y4 - y3 * x4)) / (
+        (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
+    )
+    return [px, py]
+What It Does:
+
+Intersection Calculation: Computes the intersection point of two lines defined by their endpoints.
+
+Return: Provides the (x, y) coordinates of the intersection.
+
+ccw
+python
+Copy
+def ccw(A, B, C):
+    return (C.y - A.y) * (B.x - A.x) > (B.y - A.y) * (C.x - A.x)
+What It Does:
+
+Orientation Check: Determines if three points (A, B, C) are arranged in a counterclockwise order.
+
+Return: A boolean value that is used as a helper for line intersection logic.
+
+intersect
+python
+Copy
+def intersect(A, B, C, D):
+    return ccw(A, C, D) != ccw(B, C, D) and ccw(A, B, C) != ccw(A, B, D)
+What It Does:
+
+Intersection Determination: Uses the ccw function to determine if two line segments (A-B and C-D) intersect.
+
+Return: A boolean indicating whether the two segments intersect.
+
+dotdict
+python
+Copy
+class dotdict(dict):
+    """dot.notation access to dictionary attributes"""
+
+    __getattr__ = dict.get
+    __setattr__ = dict.__setitem__
+    __delattr__ = dict.__delitem__
+What It Does:
+
+Dictionary Extension: Subclasses Python’s built-in dict to allow attribute-style access (e.g., point.x instead of point['x']).
+
+Usage: Simplifies accessing dictionary elements, particularly when working with point coordinates.
+
+process
+python
+Copy
+def process(input_list, threshold=(10, 15)):
+    combos = itertools.combinations(input_list, 2)
+    points_to_remove = [
+        point2
+        for (point1, point2) in combos
+        if abs(point1[0] - point2[0]) <= threshold[0]
+        and abs(point1[1] - point2[1]) <= threshold[1]
+    ]
+    points_to_keep = [point for point in input_list if point not in points_to_remove]
+    return points_to_keep
+What It Does:
+
+Clustering: Processes a list of points and removes those that are very close to one another (redundant detections).
+
+Thresholding: Uses a threshold tuple to decide when two points are considered duplicates.
+
+Return: A filtered list of unique points.
+
+Data and Output
+Annotated Images:
+Images with detected traffic lights are saved in a designated folder (e.g., traffic_light_marked_yolov9e).
+
+JSON Detection File:
+Detection details (bounding box coordinates, labels, etc.) are stored in a JSON file.
+
+Spatial Feature Class:
+A spatial DataFrame is created from the detected points and exported as a feature class to a file geodatabase (e.g., DeepLearning.gdb) for use with ArcGIS Online.
+
+Contributing
+Contributions are welcome! To contribute:
+
+Fork the repository.
+
+Create a new branch for your feature or bug fix.
+
+Submit a pull request detailing your changes.
+
+License
+This project is licensed under the MIT License.
+
+Acknowledgments
+Ultralytics YOLO: For providing a robust object detection model.
+
+ArcGIS API for Python: For enabling spatial data processing and export.
+
+OpenCV, NumPy, and Pandas: For efficient image and data manipulation.
+
