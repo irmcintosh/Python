@@ -67,43 +67,37 @@ Standard libraries used include `os`, `json`, `math`, `itertools`, `zipfile`, an
    ```bash
    git clone https://github.com/yourusername/traffic-light-detection.git
    cd traffic-light-detection
-Install the Required Dependencies:
+2. Install the Required Dependencies:
 
-bash
-Copy
+```bash
 pip install opencv-python numpy pandas arcgis ultralytics
-Set Up Data:
+```
+3. Set Up Data:
+- Update file paths (e.g., sampleDir, filepath, and image_meta_data) in the script to match your local data locations.
+- If using ArcGIS Online sample data, adjust the download settings accordingly.
 
-Update file paths (e.g., sampleDir, filepath, and image_meta_data) in the script to match your local data locations.
-
-If using ArcGIS Online sample data, adjust the download settings accordingly.
+---
 
 Usage
-Configure Paths:
+1. Configure Paths:
+   *Modify the file paths in the script to point to your local directories where the imagery and metadata are stored.
+3. Run the Script:
 
-Modify the file paths in the script to point to your local directories where the imagery and metadata are stored.
-
-Run the Script:
-
-bash
-Copy
+```bash
 python your_script.py
+```
 The script will:
+- Load the YOLO model and perform detection on each image.
+- Annotate and save images with detected traffic lights.
+- Write detection results to a JSON file.
+- Process spatial data from camera metadata and detected bounding boxes.
+- Export a spatial DataFrame as a feature class to a file geodatabase.
 
-Load the YOLO model and perform detection on each image.
+---
 
-Annotate and save images with detected traffic lights.
-
-Write detection results to a JSON file.
-
-Process spatial data from camera metadata and detected bounding boxes.
-
-Export a spatial DataFrame as a feature class to a file geodatabase.
-
-Function Explanations
-traffic_light_finder
-python
-Copy
+## Function Explanations
+### traffic_light_finder
+```python
 def traffic_light_finder(oriented_image_path):
     flag = 0
     coordlist = []
@@ -135,19 +129,18 @@ def traffic_light_finder(oriented_image_path):
             temp_list["assetname"] = "traffic light"
             
     return temp_list, test_img
-What It Does:
+```
+#### What It Does:
+- Inference: Runs the YOLO model on an input image.
+- Detection Check: Determines if any objects (specifically traffic lights) are detected.
+- Annotation: Draws bounding boxes and labels on detected traffic lights.
+- Output: Returns a dictionary with detection details and the annotated image.
 
-Inference: Runs the YOLO model on an input image.
+---
 
-Detection Check: Determines if any objects (specifically traffic lights) are detected.
+### find_intersection
+```python
 
-Annotation: Draws bounding boxes and labels on detected traffic lights.
-
-Output: Returns a dictionary with detection details and the annotated image.
-
-find_intersection
-python
-Copy
 def find_intersection(x1, y1, x2, y2, x3, y3, x4, y4):
     px = ((x1 * y2 - y1 * x2) * (x3 - x4) - (x1 - x2) * (x3 * y4 - y3 * x4)) / (
         (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
@@ -156,52 +149,56 @@ def find_intersection(x1, y1, x2, y2, x3, y3, x4, y4):
         (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
     )
     return [px, py]
-What It Does:
+```
+#### What It Does:
+- Intersection Calculation: Computes the intersection point of two lines defined by their endpoints.
+- Return: Provides the (x, y) coordinates of the intersection.
 
-Intersection Calculation: Computes the intersection point of two lines defined by their endpoints.
+---
 
-Return: Provides the (x, y) coordinates of the intersection.
+### ccw
+```python
 
-ccw
-python
-Copy
 def ccw(A, B, C):
     return (C.y - A.y) * (B.x - A.x) > (B.y - A.y) * (C.x - A.x)
-What It Does:
+```
+####What It Does:
+- Orientation Check: Determines if three points (A, B, C) are arranged in a counterclockwise order.
+- Return: A boolean value that is used as a helper for line intersection logic.
 
-Orientation Check: Determines if three points (A, B, C) are arranged in a counterclockwise order.
+---
 
-Return: A boolean value that is used as a helper for line intersection logic.
+### intersect
+```python
 
-intersect
-python
-Copy
 def intersect(A, B, C, D):
     return ccw(A, C, D) != ccw(B, C, D) and ccw(A, B, C) != ccw(A, B, D)
-What It Does:
+```
+####What It Does:
+- Intersection Determination: Uses the ccw function to determine if two line segments (A-B and C-D) intersect.
+- Return: A boolean indicating whether the two segments intersect.
 
-Intersection Determination: Uses the ccw function to determine if two line segments (A-B and C-D) intersect.
+---
 
-Return: A boolean indicating whether the two segments intersect.
+###dotdict
+```python
 
-dotdict
-python
-Copy
 class dotdict(dict):
     """dot.notation access to dictionary attributes"""
 
     __getattr__ = dict.get
     __setattr__ = dict.__setitem__
     __delattr__ = dict.__delitem__
-What It Does:
+```
+#### What It Does:
+- Dictionary Extension: Subclasses Python’s built-in dict to allow attribute-style access (e.g., point.x instead of point['x']).
+- Usage: Simplifies accessing dictionary elements, particularly when working with point coordinates.
 
-Dictionary Extension: Subclasses Python’s built-in dict to allow attribute-style access (e.g., point.x instead of point['x']).
+---
 
-Usage: Simplifies accessing dictionary elements, particularly when working with point coordinates.
+### process
+```python
 
-process
-python
-Copy
 def process(input_list, threshold=(10, 15)):
     combos = itertools.combinations(input_list, 2)
     points_to_remove = [
@@ -212,10 +209,13 @@ def process(input_list, threshold=(10, 15)):
     ]
     points_to_keep = [point for point in input_list if point not in points_to_remove]
     return points_to_keep
-What It Does:
+```
+#### What It Does:
 - Clustering: Processes a list of points and removes those that are very close to one another (redundant detections).
 - Thresholding: Uses a threshold tuple to decide when two points are considered duplicates.
 - Return: A filtered list of unique points.
+
+---
 
 # Data and Output
 - Annotated Images:
@@ -225,6 +225,8 @@ What It Does:
 - Spatial Feature Class:
   A spatial DataFrame is created from the detected points and exported as a feature class to a file geodatabase (e.g., DeepLearning.gdb) for use with ArcGIS Online.
 
+---
+
 # Contributing
 Contributions are welcome! To contribute:
 
@@ -232,8 +234,12 @@ Contributions are welcome! To contribute:
 2. Create a new branch for your feature or bug fix.
 3. Submit a pull request detailing your changes.
 
+---
+
 # License
 This project is licensed under the MIT License.
+
+---
 
 # Acknowledgments
 - Ultralytics YOLO: For providing a robust object detection model.
