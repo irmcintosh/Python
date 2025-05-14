@@ -72,4 +72,4 @@ Imagine the output raster being displayed in a GIS environment with a color ramp
 
 ## Conclusion
 
-This script accurately calculates the path loss using the Hata-Okumura model and generates a raster representing signal strength across the study area. Adjust the parameters and paths to fit your specific use case.
+This script calculates the path loss using the Hata-Okumura model and generates a raster representing signal strength across the study area. Adjust the parameters and paths to fit your specific use case.
