@@ -1,23 +1,3 @@
-"""
-ArcGIS Pro Python Script: Automated Point Tour with Consistent Custom Framing
-
-Description:
-    Loops through a point feature layer, pans/zooms the map to each point using
-    the EXACT same view (extent size, scale, and offset) that you manually set.
-    Selects each point, extracts raster values (e.g. slope) within that identical
-    analysis window, and saves results as individual feature classes.
-
-Use Case:
-    - Consistent visual comparison of multiple locations
-    - Automated screenshot-ready tours
-    - Repeatable raster extraction with identical spatial context
-
-Instructions:
-    1. Manually zoom and pan to exactly how you want every point to appear
-    2. Click inside the map view to give it focus
-    3. Run this script — it will replicate your view on every point!
-"""
-
 import arcpy
 import time
 
@@ -92,6 +72,16 @@ with arcpy.da.SearchCursor(lyr, ["SHAPE@XY", "id"]) as cursor:
         print(f"      Slope = {slope_value:.2f}°")
 
         time.sleep(pause)  # Pause so you can enjoy the view
+        
+        # === Remove the temporary output layer from the Contents pane ===
+        # Find it by its name and remove it so the Contents pane stays clean.
+        temp_layers = map_obj.listLayers(safe_name)
+        for temp_lyr in temp_layers:
+            try:
+                map_obj.removeLayer(temp_lyr)
+                print(f"     Removed temporary layer '{safe_name}' from map")
+            except Exception as e:
+                print(f"     Could not remove layer '{safe_name}': {e}")
 
         # Clean up selection for next iteration
         arcpy.management.SelectLayerByAttribute(lyr, "CLEAR_SELECTION")
